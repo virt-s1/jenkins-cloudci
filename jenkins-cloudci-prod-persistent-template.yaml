@@ -8,10 +8,10 @@ metadata:
   name: jenkins-cloudci-prod-persistent
   annotations:
     openshift.io/display-name: Jenkins CloudCI (Persistent)
-    openshift.io/documentation-url: https://docs.openshift.org/latest/using_images/other_images/jenkins.html
-    openshift.io/provider-display-name: Red Hat, Inc.
-    openshift.io/support-url: https://access.redhat.com
-    tags: instant-app,jenkins
+    openshift.io/documentation-url: https://github.com/jenkinsci/docker/blob/master/README.md
+    openshift.io/provider-display-name: Jenkins.io
+    openshift.io/support-url: https://github.com/jenkinsci/docker
+    tags: jenkins, ocp4
 
 objects:
   # IMAGES FOR JENKINS MASTER
@@ -66,7 +66,7 @@ objects:
     to:
       kind: Service
       name: ${JENKINS_SERVICE_NAME}
-  # 200G PVC
+  # 100G PVC
 - kind: PersistentVolumeClaim
   apiVersion: v1
   metadata:
@@ -113,10 +113,10 @@ objects:
             timeoutSeconds: 240
           resources:
             limits:
-              memory: "2Gi"
+              memory: "4Gi"
               cpu: "2000m"
             requests:
-              memory: "2Gi"
+              memory: "4Gi"
               cpu: "2000m"
           securityContext:
             capabilities: {}
@@ -227,12 +227,12 @@ parameters:
 - description: Git repository with Dockerfile and master entrypoint.
   displayName: Repository URL
   name: REPO_URL
-  value: https://gitlab.cee.redhat.com/cloudci/cloudci-jenkins.git
+  value: https://github.com/virt-s1/jenkins-cloudci.git
   required: true
 - description: The sub-directory inside the repository.
   displayName: Context Directory
   name: CONTEXTDIR
-  value: master-prod
+  value: jenkins-prod
 - description: The git ref or tag to use for customization.
   displayName: Git Reference
   name: REPO_REF
@@ -256,9 +256,9 @@ parameters:
 - name: VOLUME_CAPACITY
   displayName: Volume Capacity
   description: Volume space available for data, e.g. 512Mi, 2Gi.
-  value: 200Gi
+  value: 100Gi
   required: true
 - name: JENKINS_CASC_CONFIG
   displayName: Jenkins CASC configuration file
   description: A CASC configuration file in Jenkins master
-  value: https://gitlab.cee.redhat.com/cloudci/cloudci-jenkins/raw/master/master-prod/jcasc.yaml
+  value: https://raw.githubusercontent.com/virt-s1/jenkins-cloudci/master/jenkins-prod/jcasc.yaml

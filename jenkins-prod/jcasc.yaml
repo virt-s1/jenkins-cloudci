@@ -1,9 +1,9 @@
 jenkins:
   systemMessage: "!!!DO NOT EDIT HERE!!!\r\nControlled by Configuration As Code and Job DSL"
-  slaveAgentPort: 30032
   agentProtocols:
     - "JNLP4-connect"
     - "Ping"
+  slaveAgentPort: 30032
   crumbIssuer:
     standard:
       excludeClientIPFromCrumb: true
@@ -77,34 +77,15 @@ jenkins:
   - kubernetes:
       containerCap: 100
       containerCapStr: "100"
-      jenkinsTunnel: "jenkins-cloudci-prod-virt-qe-3rd.cloud.paas.psi.redhat.com:30032"
-      jenkinsUrl: "https://jenkins-cloudci-prod-virt-qe-3rd.cloud.paas.psi.redhat.com"
+      jenkinsTunnel: "jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com:30032"
+      jenkinsUrl: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com"
       name: "openshift"
       namespace: "virt-qe-3rd"
-      serverCertificate: |-
-        -----BEGIN CERTIFICATE-----
-        MIIC6jCCAdKgAwIBAgIBATANBgkqhkiG9w0BAQsFADAmMSQwIgYDVQQDDBtvcGVu
-        c2hpZnQtc2lnbmVyQDE1NDg5NjQzNjEwHhcNMTkwMTMxMTk1MjQwWhcNMjQwMTMw
-        MTk1MjQxWjAmMSQwIgYDVQQDDBtvcGVuc2hpZnQtc2lnbmVyQDE1NDg5NjQzNjEw
-        ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDlElZ4Yw8/r57yh8wComUn
-        0b1ldIJkbr7GzEOCKNOIjvd6OwMu55nDBO2syOH2x8H+7L7x1vTB+49aNYHAZ+Q7
-        BPqsEV1FSEPwPGdlappoZTW2BC2co8EuCV4jy6TfNfJqg+AiXeu7ecdDukHl3F4R
-        rbxtBiAof2V6/qrRGLTplATBIMXpKGZd3U79xitSq23PVtVPojemhojdcymmwkao
-        Kp6qLOEe3TuUEaXjGyxAEsfmBOSjYUyclfoeKK3ps79yPCtGf4GMkq1WPZhdTdZP
-        OS2TrJg1SFWL0rNtUbjMuSa+Z9kYA4q8mIZE1KcyBGCOoV+B3XHmfn1p1lahARgH
-        AgMBAAGjIzAhMA4GA1UdDwEB/wQEAwICpDAPBgNVHRMBAf8EBTADAQH/MA0GCSqG
-        SIb3DQEBCwUAA4IBAQDUUcvAi/bFdYXC+aG9+zRc6wLO8dHBHbMvtIFHNoxd8dmA
-        XcGhMJpzSdEbTlzqHtrR5riYCskeihNjaNuAQsJzbMHUmxBSrQTe9SrGZnpyY2Tj
-        hFoJhKILbEdssGSP3yA2WPycTE1ZlEFNjjqIORhNXNpvjcmpq6PLzTfDjQ6ggSzb
-        djABUwPkyaR8hWihkjklehmoI8rFTqPYqSEJboIPNz3vUHb++uE8hWOtp0gFvMyb
-        2yOP1w43Hmtx6PJLnQBUB7N9rLX26mPNLbgT7NmkSw35j8ghE7QRhFiR5oTaiDG1
-        fnmqtwc5+6wbriKMIarg2JjZ99NjYrnQ45h6ls0B
-        -----END CERTIFICATE-----
-      serverUrl: "https://paas.psi.redhat.com"
+      serverUrl: "https://api.ocp4.prod.psi.redhat.com:6443"
       templates:
       - containers:
         - args: "^${computer.jnlpmac} ^${computer.name}"
-          image: "docker-registry.default.svc:5000/virt-qe-3rd/jslave-container-fedora-33-prod:latest"
+          image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-33-prod:latest"
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -116,7 +97,6 @@ jenkins:
         id: "ef9360de-fbba-468f-9dfd-bc1e0c829e1b"
         label: "container-fedora-33-prod"
         name: "container-fedora-33-prod"
-        nodeSelector: "beta.kubernetes.io/os=linux"
         serviceAccount: "jenkins-cloudci-prod"
         yamlMergeStrategy: "override"
   - openstack:
@@ -233,10 +213,10 @@ unclassified:
             git:
               remote: "https://gitlab.cee.redhat.com/3rd/3rdci-library.git"
   location:
-    adminAddress: "Cloud QE CI <xiaofwan@redhat.com>"
-    url: "https://jenkins-cloudci-prod-virt-qe-3rd.cloud.paas.psi.redhat.com/"
+    adminAddress: "Cloud CI <xiaofwan@redhat.com>"
+    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
   resourceRoot:
-    url: "https://jenkins-cloudci-prod-virt-qe-3rd.cloud.paas.psi.redhat.com"
+    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
   mailer:
     charset: "UTF-8"
     defaultSuffix: "@redhat.com"
@@ -266,8 +246,6 @@ unclassified:
             - libvirt-daemon-kvm
             - virt-install
             - python3-lxml
-          runcmd:
-            - ["dnf", "install", "-y", "http://file-server-virt-qe-3rd.cloud.paas.psi.redhat.com/redhat-internal-cert-install-0.1-23.el7.csb.noarch.rpm"]
           users:
             - default
             - name: admin
@@ -316,8 +294,6 @@ unclassified:
             - libvirt-daemon-kvm
             - virt-install
             - python3-lxml
-          runcmd:
-            - ["dnf", "install", "-y", "http://file-server-virt-qe-3rd.cloud.paas.psi.redhat.com/redhat-internal-cert-install-0.1-23.el7.csb.noarch.rpm"]
           users:
             - default
             - name: admin
@@ -366,8 +342,6 @@ unclassified:
             - libvirt-daemon-kvm
             - virt-install
             - python3-lxml
-          runcmd:
-            - ["dnf", "install", "-y", "http://file-server-virt-qe-3rd.cloud.paas.psi.redhat.com/redhat-internal-cert-install-0.1-23.el7.csb.noarch.rpm"]
           users:
             - default
             - name: admin
@@ -386,4 +360,4 @@ unclassified:
         name: "psi-openstack-rhel-8-4-0-user-data"
         providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
 jobs:
-  - url: https://gitlab.cee.redhat.com/cloudci/cloudci-jobs/raw/master/seed-prod.groovy
+  - url: https://raw.githubusercontent.com/virt-s1/jenkins-jobs-cloudci/master/seed-prod.groovy

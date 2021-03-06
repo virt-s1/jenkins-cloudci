@@ -12,7 +12,9 @@ ADD https://password.corp.redhat.com/legacy.crt \
 RUN curl -k https://engineering.redhat.com/Eng-CA.crt -o /etc/pki/ca-trust/source/anchors/Eng-CA.crt && \
     update-ca-trust extract
 
-ADD https://beaker-project.org/yum/beaker-client-Fedora.repo /etc/yum.repos.d/
+# Create Google Cloud SDK repo
+COPY files/google-cloud-sdk.repo /etc/yum.repos.d/
+
 # Install headless Java
 RUN dnf -y update && \
     dnf -y install \
@@ -31,6 +33,7 @@ RUN dnf -y update && \
         git \
         gnupg \
         golang \
+        google-cloud-sdk \
         java-11-openjdk-headless \
         jq \
         krb5-workstation \
@@ -85,13 +88,12 @@ RUN dnf -y update && \
     unlink /usr/share/man/man1/rmid.1.gz && \
     unlink /usr/share/man/man1/rmiregistry.1.gz && \
     unlink /usr/share/man/man1/unpack200.1.gz && \
-    pip install requests-credssp pywinrm pyvmomi boto boto3 openstacksdk stomp.py && \
+    pip install requests-credssp pywinrm pyvmomi boto boto3 openstacksdk stomp.py google-auth crcmod && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -rf aws awscliv2.zip && \
-    mkdir -p /etc/beaker && \
-    mkdir -p /beaker
+    mkdir -p /etc/beaker
 
 # Copy go-init source code
 COPY go-init /tmp/go-init/
