@@ -113,8 +113,8 @@ objects:
             timeoutSeconds: 240
           resources:
             limits:
-              memory: "4Gi"
-              cpu: "2000m"
+              memory: "8Gi"
+              cpu: "4000m"
             requests:
               memory: "4Gi"
               cpu: "2000m"
