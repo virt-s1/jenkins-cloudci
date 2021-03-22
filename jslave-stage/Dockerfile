@@ -23,7 +23,7 @@ RUN dnf -y update && \
         beaker-client \
         bind-utils \
         bzip2 \
-        chromium-headless \
+        chromium \
         curl \
         expect \
         gcc \
