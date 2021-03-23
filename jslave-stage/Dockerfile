@@ -1,10 +1,24 @@
 FROM quay.io/fedora/fedora:33-x86_64
 LABEL maintainer='xiaofwan@redhat.com'
 
-ENV HOME=/home/jenkins \
-    LANG=en_US.UTF-8
+ARG user=jenkins
+ARG group=jenkins
+ARG uid=1000
+ARG gid=1000
+ARG user_home=/home/jenkins
+ARG user_download=/home/jenkins/downloads
 
-USER root
+ENV HOME=/home/jenkins
+ENV LANG=en_US.UTF-8
+
+# jslave runs with user `jenkins`, uid = 1000
+RUN groupadd -g ${gid} ${group} \
+    && useradd -N -d ${user_home} -u ${uid} -g ${gid} -m -s /bin/bash ${user} \
+    && mkdir -p ${user_download}
+
+# /home/jenkins/downloads is a volume, so the kernel can be download here
+VOLUME ${user_download}
+
 # Install redhat crets used by rcm repo
 ADD https://password.corp.redhat.com/legacy.crt \
     https://password.corp.redhat.com/RH-IT-Root-CA.crt \
@@ -109,7 +123,7 @@ ADD contrib/bin/* /usr/local/bin/
 WORKDIR  /tmp/go-init
 RUN go build . && mv go-init /usr/bin
 
-USER 1001
+USER ${user}
 
 # Run the Jenkins JNLP client
 ENTRYPOINT ["/usr/bin/go-init", "-main", "/usr/local/bin/run-jnlp-client"]

@@ -15,10 +15,6 @@ export HOME=${JENKINS_HOME}
 
 export JAVA_VERSION=${USE_JAVA_VERSION:=java-11}
 
-# Generate passwd file and group fiile based on current uid and gid
-echo "jenkins:x:$(id -u):$(id -g):,,,:/home/jenkins:/bin/bash" >> /etc/passwd
-echo "jenkins:x:$(id -G | cut -d' ' -f 2)" >> /etc/group
-
 CONTAINER_MEMORY_IN_BYTES=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
 CONTAINER_MEMORY_IN_MB=$((CONTAINER_MEMORY_IN_BYTES/2**20))
 

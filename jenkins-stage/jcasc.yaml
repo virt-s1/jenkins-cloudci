@@ -97,8 +97,12 @@ jenkins:
         id: "ef9360de-fbba-468f-9dfd-bc1e0c829e1b"
         label: "container-fedora-33-stage"
         name: "container-fedora-33-stage"
-        nodeSelector: "beta.kubernetes.io/os=linux"
         serviceAccount: "jenkins-cloudci-stage"
+        volumes:
+        - persistentVolumeClaim:
+            claimName: "jslave-pv"
+            mountPath: "/home/jenkins/downloads"
+            readOnly: false
         yamlMergeStrategy: "override"
   - openstack:
       credentialsId: "psi-openstack-credential-v3"
