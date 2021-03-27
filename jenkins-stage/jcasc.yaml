@@ -87,6 +87,7 @@ jenkins:
         - args: "^${computer.jnlpmac} ^${computer.name}"
           command: ""
           image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-33-stage:latest"
+          alwaysPullImage: true
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -98,23 +99,6 @@ jenkins:
         id: "ef9360de-fbba-468f-9dfd-bc1e0c829e1b"
         label: "container-fedora-33-stage"
         name: "container-fedora-33-stage"
-        serviceAccount: "jenkins-cloudci-stage"
-        yamlMergeStrategy: "override"
-      - containers:
-        - args: "^${computer.jnlpmac} ^${computer.name}"
-          command: ""
-          image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-33-stage:latest"
-          livenessProbe:
-            failureThreshold: 0
-            initialDelaySeconds: 0
-            periodSeconds: 0
-            successThreshold: 0
-            timeoutSeconds: 0
-          name: "jnlp"
-          workingDir: "/home/jenkins"
-        id: "b6824295-b14e-4efd-a681-d4994c050a2b"
-        label: "container-fedora-33-pv-stage"
-        name: "container-fedora-33-pv-stage"
         serviceAccount: "jenkins-cloudci-stage"
         volumes:
         - persistentVolumeClaim:

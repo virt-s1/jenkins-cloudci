@@ -1,23 +1,10 @@
 FROM quay.io/fedora/fedora:33-x86_64
 LABEL maintainer='xiaofwan@redhat.com'
 
-ARG user=jenkins
-ARG group=jenkins
-ARG uid=1000
-ARG gid=1000
-ARG user_home=/home/jenkins
-ARG user_download=/home/jenkins/downloads
+ENV HOME=/home/jenkins \
+    LANG=en_US.UTF-8
 
-ENV HOME=/home/jenkins
-ENV LANG=en_US.UTF-8
-
-# jslave runs with user `jenkins`, uid = 1000
-RUN groupadd -g ${gid} ${group} \
-    && useradd -N -d ${user_home} -u ${uid} -g ${gid} -m -s /bin/bash ${user} \
-    && mkdir -p ${user_download}
-
-# /home/jenkins/downloads is a volume, so the kernel can be download here
-VOLUME ${user_download}
+USER root
 
 # Install redhat crets used by rcm repo
 ADD https://password.corp.redhat.com/legacy.crt \
@@ -78,8 +65,9 @@ RUN dnf -y update && \
         zip && \
     dnf clean all && \
     mkdir -p /home/jenkins && \
-    chown -R 1001:0 /home/jenkins && \
+    mkdir -p /home/jenkins/downloads && \
     chmod -R g+w /home/jenkins && \
+    chmod -R g+w /home/jenkins/downloads && \
     chmod g=u /etc/passwd /etc/group && \
     chmod -R 775 /etc/alternatives && \
     chmod -R 775 /var/lib/alternatives && \
@@ -106,6 +94,7 @@ RUN dnf -y update && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
+    aws --version && \
     rm -rf aws awscliv2.zip && \
     mkdir -p /etc/beaker
 
@@ -117,13 +106,14 @@ COPY files/jenkins.keytab files/krb5.conf /etc/
 COPY files/client.conf /etc/beaker/
 
 # Copy the entrypoint
-ADD contrib/bin/* /usr/local/bin/
+ADD files/run-jnlp-client /usr/local/bin/
 
 # Build go-init
 WORKDIR  /tmp/go-init
 RUN go build . && mv go-init /usr/bin
 
-USER ${user}
+# /home/jenkins/downloads is a volume, so the kernel can be download here
+VOLUME /home/jenkins/downloads
 
 # Run the Jenkins JNLP client
 ENTRYPOINT ["/usr/bin/go-init", "-main", "/usr/local/bin/run-jnlp-client"]
