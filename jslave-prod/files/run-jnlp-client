@@ -22,14 +22,8 @@ echo "jenkins:x:$(id -G | cut -d' ' -f 2)" >> /etc/group
 CONTAINER_MEMORY_IN_BYTES=$(cat /sys/fs/cgroup/memory/memory.limit_in_bytes)
 CONTAINER_MEMORY_IN_MB=$((CONTAINER_MEMORY_IN_BYTES/2**20))
 
-if [[ "$(uname -m)" == "x86_64" ]]; then
-	alternatives --set java $(alternatives --display java | grep $JAVA_VERSION | awk '/family.*x86_64/ { print $1; }')
-	alternatives --set javac $(alternatives --display javac | grep $JAVA_VERSION | awk '/family.*x86_64/ { print $1; }')
-#set JVM for all other archs
-else
-  alternatives --set java $(alternatives --display java | grep $JAVA_VERSION | awk '/family.*'$(uname -m)'/ { print $1; }')
-  alternatives --set javac $(alternatives --display javac | grep $JAVA_VERSION | awk '/family.*'$(uname -m)'/ { print $1; }')
-fi
+alternatives --set java $(alternatives --display java | grep $JAVA_VERSION | awk '/family.*x86_64/ { print $1; }')
+alternatives --set javac $(alternatives --display javac | grep $JAVA_VERSION | awk '/family.*x86_64/ { print $1; }')
 
 echo "OPENSHIFT_JENKINS_JVM_ARCH='${OPENSHIFT_JENKINS_JVM_ARCH}', CONTAINER_MEMORY_IN_MB='${CONTAINER_MEMORY_IN_MB}', using $(readlink /etc/alternatives/java)"
 
@@ -57,10 +51,6 @@ if [[ -z "${SKIP_NO_PROXY_DEFAULT}" || \
   fi
 fi
 shopt -u nocasematch
-
-# Configure the slave image
-source /usr/local/bin/configure-slave
-source /usr/local/bin/configure-agent
 
 set -e
 

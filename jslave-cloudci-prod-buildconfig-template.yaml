@@ -42,6 +42,17 @@ objects:
       type: Docker
     triggers:
     - type: ConfigChange
+  # 50G PVC
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: "jslave-prod-pv"
+  spec:
+    accessModes:
+    - ReadWriteMany
+    resources:
+      requests:
+        storage: "50Gi"
 parameters:
 - description: Git repository with Dockerfile and slave entrypoint.
   displayName: Repository URL
