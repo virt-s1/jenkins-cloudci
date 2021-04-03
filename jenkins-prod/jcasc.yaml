@@ -87,6 +87,7 @@ jenkins:
         - args: "^${computer.jnlpmac} ^${computer.name}"
           command: ""
           image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-33-prod:latest"
+          alwaysPullImage: true
           livenessProbe:
             failureThreshold: 0
             initialDelaySeconds: 0
@@ -94,11 +95,16 @@ jenkins:
             successThreshold: 0
             timeoutSeconds: 0
           name: "jnlp"
-          workingDir: "/tmp"
+          workingDir: "/home/jenkins"
         id: "ef9360de-fbba-468f-9dfd-bc1e0c829e1b"
         label: "container-fedora-33-prod"
         name: "container-fedora-33-prod"
         serviceAccount: "jenkins-cloudci-prod"
+        volumes:
+        - persistentVolumeClaim:
+            claimName: "jslave-prod-pv"
+            mountPath: "/home/jenkins/downloads"
+            readOnly: false
         yamlMergeStrategy: "override"
   - openstack:
       credentialsId: "psi-openstack-credential-v3"
@@ -218,6 +224,13 @@ unclassified:
     url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
   resourceRoot:
     url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    configs:
+    - credentialsId: "github-api-credential"
+      manageHooks: false
+      name: "Github"
   mailer:
     charset: "UTF-8"
     defaultSuffix: "@redhat.com"
@@ -270,13 +283,13 @@ unclassified:
           yum_repos:
             baseos:
               name: rhel8-baseos
-              baseurl: https://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.3.1/compose/BaseOS/x86_64/os/
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/updates/RHEL-8/latest-RHEL-8.3.1/compose/BaseOS/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
             appstream:
               name: rhel8-appstream
-              baseurl: https://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.3.1/compose/AppStream/x86_64/os/
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/updates/RHEL-8/latest-RHEL-8.3.1/compose/AppStream/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
@@ -318,13 +331,13 @@ unclassified:
           yum_repos:
             baseos:
               name: rhel8-baseos
-              baseurl: https://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4.0/compose/BaseOS/x86_64/os/
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.4.0/compose/BaseOS/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
             appstream:
               name: rhel8-appstream
-              baseurl: https://download.devel.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.4.0/compose/AppStream/x86_64/os/
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.4.0/compose/AppStream/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
