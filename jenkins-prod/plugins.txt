@@ -10,6 +10,7 @@ git:4.6.0
 git-client:3.6.0
 github:1.33.1
 github-branch-source:2.9.7
+github-scm-trait-notification-context:1.1
 google-chat-notification:1.4
 google-oauth-plugin:1.0.3
 groovy:2.3
