@@ -137,6 +137,13 @@ jenkins:
             image:
               name: "RHEL-8.4.0-x86_64-nightly-latest"
           userDataId: "psi-openstack-rhel-8-4-0-user-data"
+      - labels: "vm-rhel-8-5-0"
+        name: "vm-rhel-8-5-0"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "RHEL-8.5.0-x86_64-nightly-latest"
+          userDataId: "psi-openstack-rhel-8-5-0-user-data"
       - labels: "vm-fedora-33"
         name: "vm-fedora-33"
         slaveOptions:
@@ -372,6 +379,54 @@ unclassified:
                 expire: False
         id: "psi-openstack-rhel-8-4-0-user-data"
         name: "psi-openstack-rhel-8-4-0-user-data"
+        providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
+    - openstackUserData:
+        content: |-
+          #cloud-config
+          yum_repos:
+            baseos:
+              name: rhel8-baseos
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/BaseOS/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+            appstream:
+              name: rhel8-appstream
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/AppStream/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+          packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
+            - java-11-openjdk
+            - expect
+            - qemu-img
+            - qemu-kvm
+            - libvirt-client
+            - libvirt-daemon-kvm
+            - virt-install
+            - python3-lxml
+          users:
+            - default
+            - name: admin
+              gecos: Administrator
+              groups: users,wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjT6VkfcyzUflY3n95oKIuqAOuCN5bJDBzfu0t62DabzcNjpCuK0fiKyx0B+UiLJJhprXnFmxmSly2vHApdwwIjLd09WRepcG8p6WdUTv3LfKljNf/iZrfaNeEC0+zjxyCxXc5a3ePYYi/cIcYy1sZIwe3/Q+q4LHU/rqN7eTG6RkxJ71wN3jP3lrkTQm/Uc+qIHGR3kGQuY+4ARZg08zEtpM2EWWxDvZJWGlhvYxt86mdKy/ngNxbK4fYaq1DRAhJyFxekEaoGSDE+gADNAxknzoslxpqul530Zk/E+umEIxWlYWWFSXppxRk/g1Ue03FKzJ7/bU1y39iCUsMdGJxMpRktWQAWnr1rfQAltgbyePmbk/sXhjHgkDlvkSRQbGJKZ534jXJJaSPmwnUHq8iKr1dBMLo55qK8aBglj/MZUAq7/Y5354cPze2lLtVrOS4IO3UErNLb+H4AZ+suD5OMjUZ3sP6F2FeA/j7wGxv6yUvrVpT4Quc4SVhJOuDRdU= jslave-psi-openstack
+              ssh_pwauth: True
+              chpasswd:
+                list: |
+                  root:foobar
+                  admin:foobar
+                expire: False
+        id: "psi-openstack-rhel-8-5-0-user-data"
+        name: "psi-openstack-rhel-8-5-0-user-data"
         providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
 jobs:
   - url: https://raw.githubusercontent.com/virt-s1/jenkins-jobs-cloudci/master/seed-prod.groovy
