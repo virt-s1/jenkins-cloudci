@@ -113,6 +113,7 @@ jenkins:
       name: "psi-openstack"
       slaveOptions:
         availabilityZone: "nova"
+        configDrive: true
         fsRoot: "/home/admin"
         hardwareId: "ab34d89f-a105-4c93-a7d9-185e327fa6d0"
         keyPairName: "jslave_key"
