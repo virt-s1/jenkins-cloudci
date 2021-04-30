@@ -120,7 +120,7 @@ jenkins:
         launcherFactory:
           ssh:
             credentialsId: "psi-openstack-ssh-credential-admin"
-        networkId: "provider_net_cci_6"
+        networkId: "provider_net_cci_9"
         retentionTime: 0
         securityGroups: "jslave_security_group"
       templates:
