@@ -1,0 +1,264 @@
+---
+kind: Template
+apiVersion: v1
+labels:
+  app: jenkins-cloudci-stage-persistent
+  template: jenkins-cloudci-stage-persistent-template
+metadata:
+  name: jenkins-cloudci-stage-persistent
+  annotations:
+    openshift.io/display-name: Jenkins CloudCI (Persistent)
+    openshift.io/documentation-url: https://github.com/jenkinsci/docker/blob/master/README.md
+    openshift.io/provider-display-name: Jenkins.io
+    openshift.io/support-url: https://github.com/jenkinsci/docker
+    tags: jenkins, ocp4
+
+objects:
+  # IMAGES FOR JENKINS MASTER
+- kind: ImageStream
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${JENKINS_APP_NAME}
+    name: ${JENKINS_SERVICE_NAME}
+  # Jenkins build
+- kind: BuildConfig
+  apiVersion: v1
+  metadata:
+    labels:
+      app: ${JENKINS_APP_NAME}
+    name: ${JENKINS_SERVICE_NAME}
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: "${JENKINS_SERVICE_NAME}:latest"
+    resources: {}
+    source:
+      contextDir: ${CONTEXTDIR}
+      git:
+        uri: ${REPO_URL}
+        ref: ${REPO_REF}
+      type: Git
+    strategy:
+      type: Docker
+      dockerStrategy:
+        noCache: true
+        forcePull: true
+        env:
+          - name: GIT_SSL_NO_VERIFY
+            value: "true"
+    triggers:
+    - type: ConfigChange
+    successfulBuildsHistoryLimit: 2
+    failedBuildsHistoryLimit: 2
+  # Route for Jenkins web service
+- kind: Route
+  apiVersion: v1
+  metadata:
+    name: ${JENKINS_SERVICE_NAME}
+    annotations:
+      template.openshift.io/expose-uri: http://{.spec.host}{.spec.path}
+  spec:
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+    to:
+      kind: Service
+      name: ${JENKINS_SERVICE_NAME}
+  # 50G PVC
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: ${JENKINS_SERVICE_NAME}
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${VOLUME_CAPACITY}
+  # Jenkins master deployment
+- kind: DeploymentConfig
+  apiVersion: v1
+  metadata:
+    name: ${JENKINS_SERVICE_NAME}
+  spec:
+    replicas: 1
+    selector:
+      name: ${JENKINS_SERVICE_NAME}
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: ${JENKINS_SERVICE_NAME}
+      spec:
+        containers:
+        - name: ${JENKINS_SERVICE_NAME}
+          image: ${JENKINS_IMAGE_STREAM_TAG}
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: 8080
+            initialDelaySeconds: 3
+            timeoutSeconds: 240
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /login
+              port: 8080
+            initialDelaySeconds: 420
+            periodSeconds: 360
+            timeoutSeconds: 240
+          resources:
+            limits:
+              memory: "4Gi"
+              cpu: "2000m"
+            requests:
+              memory: "4Gi"
+              cpu: "2000m"
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          volumeMounts:
+          - mountPath: /var/jenkins_home
+            name: ${JENKINS_SERVICE_NAME}-data
+          env:
+          - name: KUBERNETES_MASTER
+            value: https://kubernetes.default:443
+          - name: KUBERNETES_TRUST_CERTIFICATES
+            value: "true"
+          - name: JENKINS_SERVICE_NAME
+            value: "${JENKINS_SERVICE_NAME}"
+          - name: JNLP_SERVICE_NAME
+            value: "${JNLP_SERVICE_NAME}"
+          - name: CASC_JENKINS_CONFIG
+            value: ${JENKINS_CASC_CONFIG}
+          - name: JENKINS_JAVA_OVERRIDES
+            value: >-
+              -Duser.timezone=Asia/Shanghai
+          - name: JAVA_GC_OPTS
+            value: >-
+              -XX:+UseParallelGC -XX:MaxPermSize=100m -XX:MinHeapFreeRatio=20
+              -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4
+              -XX:AdaptiveSizePolicyWeight=90 -XX:MaxMetaspaceSize=500m
+              --illegal-access=permit
+          - name: JENKINS_SLAVE_AGENT_PORT
+            value: "30031"
+          # fix fatal: unable to look up current user in the passwd file: no such user
+          # https://jackiechen.blog/2017/08/29/fatal-unable-to-look-up-current-user-in-the-passwd-file-no-such-user/
+          - name: GIT_COMMITTER_NAME
+            value: "cloudci"
+          - name: GIT_COMMITTER_EMAIL
+            value: "cloudci@jenkins.openshift"
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        serviceAccountName: ${JENKINS_SERVICE_NAME}
+        volumes:
+        - name: "${JENKINS_SERVICE_NAME}-data"
+          persistentVolumeClaim:
+            claimName: "${JENKINS_SERVICE_NAME}"
+    triggers:
+    - type: "ConfigChange"
+    - type: "ImageChange"
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - ${JENKINS_SERVICE_NAME}
+        from:
+          kind: "ImageStreamTag"
+          name: ${JENKINS_IMAGE_STREAM_TAG}
+# service account for Jenkins master
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    name: "${JENKINS_SERVICE_NAME}"
+    annotations:
+      serviceaccounts.openshift.io/oauth-redirectreference.jenkins: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"${JENKINS_SERVICE_NAME}"}}'
+- kind: RoleBinding
+  apiVersion: v1
+  metadata:
+    name: "${JENKINS_SERVICE_NAME}_edit"
+  groupNames:
+  subjects:
+  - kind: ServiceAccount
+    name: "${JENKINS_SERVICE_NAME}"
+  roleRef:
+    name: edit
+# TCP port mapping 8080-80, 50000-30030
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${JNLP_SERVICE_NAME}"
+  spec:
+    ports:
+    - name: agent
+      protocol: TCP
+      port: 30031
+      nodePort: 30031
+    selector:
+      name: "${JENKINS_SERVICE_NAME}"
+    type: NodePort
+    sessionAffinity: None
+- kind: Service
+  apiVersion: v1
+  metadata:
+    name: "${JENKINS_SERVICE_NAME}"
+    annotations:
+      service.alpha.openshift.io/dependencies: '[{"name": "${JNLP_SERVICE_NAME}",
+        "namespace": "", "kind": "Service"}]'
+      service.openshift.io/infrastructure: 'true'
+    creationTimestamp:
+  spec:
+    ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 0
+    selector:
+      name: "${JENKINS_SERVICE_NAME}"
+    type: ClusterIP
+    sessionAffinity: None
+# global parameters
+parameters:
+- description: Git repository with Dockerfile and master entrypoint.
+  displayName: Repository URL
+  name: REPO_URL
+  value: https://github.com/virt-s1/jenkins-cloudci.git
+  required: true
+- description: The sub-directory inside the repository.
+  displayName: Context Directory
+  name: CONTEXTDIR
+  value: jenkins-stage
+- description: The git ref or tag to use for customization.
+  displayName: Git Reference
+  name: REPO_REF
+  value: master
+- name: JENKINS_APP_NAME
+  displayName: Jenkins APP Name
+  description: The name of the Jenkins application.
+  value: jenkins-cloudci-stage
+- name: JENKINS_SERVICE_NAME
+  displayName: Jenkins Service Name
+  description: The name of the OpenShift Service exposed for the Jenkins container.
+  value: jenkins-cloudci-stage
+- name: JNLP_SERVICE_NAME
+  displayName: Jenkins JNLP Service Name
+  description: The name of the service used for master/slave communication.
+  value: jenkins-cloudci-stage-jnlp
+- name: JENKINS_IMAGE_STREAM_TAG
+  displayName: Jenkins ImageStreamTag
+  description: Name of the ImageStreamTag to be used for the Jenkins image.
+  value: jenkins-cloudci-stage:latest
+- name: VOLUME_CAPACITY
+  displayName: Volume Capacity
+  description: Volume space available for data, e.g. 512Mi, 2Gi.
+  value: 50Gi
+  required: true
+- name: JENKINS_CASC_CONFIG
+  displayName: Jenkins CASC configuration file
+  description: A CASC configuration file in Jenkins master
+  value: https://raw.githubusercontent.com/virt-s1/jenkins-cloudci/master/jenkins-stage/jcasc.yaml

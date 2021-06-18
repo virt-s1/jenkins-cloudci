@@ -1,5 +1,5 @@
 # CentOS 8
-FROM jenkins/jenkins:lts-centos
+FROM quay.io/xiaofwan/jenkins:2.289.1-lts-centos
 
 USER root
 
