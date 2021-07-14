@@ -106,6 +106,30 @@ jenkins:
             mountPath: "/home/jenkins/downloads"
             readOnly: false
         yamlMergeStrategy: "override"
+      - containers:
+        - args: "^${computer.jnlpmac} ^${computer.name}"
+          alwaysPullImage: true
+          command: ""
+          image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-34-stage:latest"
+          alwaysPullImage: true
+          livenessProbe:
+            failureThreshold: 0
+            initialDelaySeconds: 0
+            periodSeconds: 0
+            successThreshold: 0
+            timeoutSeconds: 0
+          name: "jnlp"
+          workingDir: "/home/jenkins"
+        id: "824ab4d3-68e3-4997-9274-dd09485aa293"
+        label: "container-fedora-34-stage"
+        name: "container-fedora-34-stage"
+        serviceAccount: "jenkins-cloudci-stage"
+        volumes:
+        - persistentVolumeClaim:
+            claimName: "jslave-stage-pv"
+            mountPath: "/home/jenkins/downloads"
+            readOnly: false
+        yamlMergeStrategy: "override"
   - openstack:
       credentialsId: "psi-openstack-credential-v3"
       endPointUrl: "https://rhos-d.infra.prod.upshift.rdu2.redhat.com:13000/v3"
