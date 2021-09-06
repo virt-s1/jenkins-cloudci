@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:33-x86_64
+FROM quay.io/fedora/fedora:34-x86_64
 LABEL maintainer='xiaofwan@redhat.com'
 
 ENV HOME=/home/jenkins \
@@ -12,13 +12,15 @@ ADD https://password.corp.redhat.com/legacy.crt \
 RUN curl -k https://engineering.redhat.com/Eng-CA.crt -o /etc/pki/ca-trust/source/anchors/Eng-CA.crt && \
     update-ca-trust extract
 
-# Create Google Cloud SDK repo
-COPY files/google-cloud-sdk.repo /etc/yum.repos.d/
+# Create Google Cloud SDK and Azure CLI repo
+COPY files/google-cloud-sdk.repo files/azure-cli.repo /etc/yum.repos.d/
 
 # Install headless Java
-RUN dnf -y update && \
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
+    dnf -y update && \
     dnf -y install \
         ansible \
+        azure-cli \
         bc \
         beaker-client \
         bind-utils \
@@ -89,7 +91,7 @@ RUN dnf -y update && \
     unlink /usr/share/man/man1/rmid.1.gz && \
     unlink /usr/share/man/man1/rmiregistry.1.gz && \
     unlink /usr/share/man/man1/unpack200.1.gz && \
-    pip install requests-credssp pywinrm pyvmomi boto boto3 openstacksdk stomp.py google-auth crcmod && \
+    pip install requests-credssp pywinrm pyvmomi boto boto3 openstacksdk stomp.py google-auth crcmod ansible[azure] && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
@@ -109,7 +111,7 @@ ADD files/run-jnlp-client /usr/local/bin/
 
 # Build go-init
 WORKDIR  /tmp/go-init
-RUN go build . && mv go-init /usr/bin
+RUN GO111MODULE=off go build . && mv go-init /usr/bin
 
 # /home/jenkins/downloads is a volume, so the kernel can be download here
 VOLUME /home/jenkins/downloads
