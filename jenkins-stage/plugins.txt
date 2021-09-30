@@ -1,6 +1,7 @@
 ant:latest
 authorize-project:latest
 blueocean:latest
+cloudbees-disk-usage-simple:latest
 config-file-provider:latest
 configuration-as-code:latest
 credentials-binding:latest
@@ -54,4 +55,4 @@ workflow-cps:latest
 workflow-remote-loader:latest
 workflow-support:latest
 ws-cleanup:latest
-redhat-ci-plugin:latest:http://ci-ops-jenkins-update-site.rhev-ci-vms.eng.rdu2.redhat.com/update-center/2.235/default/download/plugins/redhat-ci-plugin/1.5.16/redhat-ci-plugin.hpi
+redhat-ci-plugin:latest:http://file-server-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/redhat-ci-plugin.hpi
