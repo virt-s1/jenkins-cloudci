@@ -1,5 +1,5 @@
 # RHEL 8 - ubi:8.4-211
-FROM quay.io/xiaofwan/jenkins:2.303.2-rhel-ubi8-jdk11
+FROM quay.io/xiaofwan/jenkins:2.303.3-rhel-ubi8-jdk11
 
 USER root
 
