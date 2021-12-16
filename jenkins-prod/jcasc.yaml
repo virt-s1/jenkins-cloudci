@@ -131,19 +131,19 @@ jenkins:
         yamlMergeStrategy: "override"
   - openstack:
       credentialsId: "psi-openstack-credential-v3"
-      endPointUrl: "https://rhos-d.infra.prod.upshift.rdu2.redhat.com:13000/v3"
+      endPointUrl: "https://api.rhos-01.prod.psi.rdu2.redhat.com:13000/v3"
       ignoreSsl: false
-      name: "psi-openstack"
+      name: "rhos-01"
       slaveOptions:
         availabilityZone: "nova"
         configDrive: true
         fsRoot: "/home/admin"
-        hardwareId: "ab34d89f-a105-4c93-a7d9-185e327fa6d0"
+        hardwareId: "d581e40a-c57f-4d4a-9fa7-01b9a8e9d116"
         keyPairName: "jslave_key"
         launcherFactory:
           ssh:
             credentialsId: "psi-openstack-ssh-credential-admin"
-        networkId: "provider_net_cci_9"
+        networkId: "shared_net_9"
         retentionTime: 0
         securityGroups: "jslave_security_group"
       templates:
