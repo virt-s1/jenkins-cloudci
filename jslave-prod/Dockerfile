@@ -91,7 +91,7 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     unlink /usr/share/man/man1/rmid.1.gz && \
     unlink /usr/share/man/man1/rmiregistry.1.gz && \
     unlink /usr/share/man/man1/unpack200.1.gz && \
-    ansible-galaxy collection install community.general openstack.cloud amazon.aws community.aws azure.azcollection community.vmware google.cloud && \
+    ansible-galaxy collection install -p /usr/share/ansible/collections community.general openstack.cloud amazon.aws community.aws azure.azcollection community.vmware google.cloud && \
     pip install requests-credssp pyvmomi botocore boto3 openstacksdk stomp.py google-auth crcmod && \
     wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt && \
     pip install -r requirements-azure.txt && \
