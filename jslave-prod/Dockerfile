@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:34-x86_64
+FROM quay.io/fedora/fedora:35-x86_64
 LABEL maintainer='xiaofwan@redhat.com'
 
 ENV HOME=/home/jenkins \
@@ -19,7 +19,7 @@ COPY files/google-cloud-sdk.repo files/azure-cli.repo /etc/yum.repos.d/
 RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     dnf -y update && \
     dnf -y install \
-        ansible \
+        ansible-core \
         azure-cli \
         bc \
         beaker-client \
@@ -91,12 +91,19 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     unlink /usr/share/man/man1/rmid.1.gz && \
     unlink /usr/share/man/man1/rmiregistry.1.gz && \
     unlink /usr/share/man/man1/unpack200.1.gz && \
-    pip install requests-credssp pywinrm pyvmomi boto boto3 openstacksdk stomp.py google-auth crcmod ansible[azure] && \
+    ansible-galaxy collection install community.general openstack.cloud amazon.aws community.aws azure.azcollection community.vmware google.cloud && \
+    pip install requests-credssp pyvmomi botocore boto3 openstacksdk stomp.py google-auth crcmod && \
+    wget https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt && \
+    pip install -r requirements-azure.txt && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     aws --version && \
     rm -rf aws awscliv2.zip && \
+    ansible --version && \
+    ansible-galaxy collection list && \
+    az --version && \
+    gcloud --version && \
     mkdir -p /etc/beaker
 
 # Copy go-init source code
