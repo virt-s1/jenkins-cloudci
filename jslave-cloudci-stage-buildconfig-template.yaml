@@ -13,18 +13,18 @@ objects:
   kind: ImageStream
   metadata:
     annotations:
-      slave-label: jslave-container-fedora-34-stage
-    name: jslave-container-fedora-34-stage
+      slave-label: jslave-container-fedora-35-stage
+    name: jslave-container-fedora-35-stage
   spec: {}
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    name: jslave-container-fedora-34-stage
+    name: jslave-container-fedora-35-stage
   spec:
     output:
       to:
         kind: ImageStreamTag
-        name: jslave-container-fedora-34-stage:latest
+        name: jslave-container-fedora-35-stage:latest
     resources: {}
     source:
       contextDir: ${CONTEXTDIR}

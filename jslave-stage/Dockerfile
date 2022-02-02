@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:34-x86_64
+FROM quay.io/fedora/fedora:35-x86_64
 LABEL maintainer='xiaofwan@redhat.com'
 
 ENV HOME=/home/jenkins \
@@ -13,14 +13,14 @@ ADD https://password.corp.redhat.com/legacy.crt \
 RUN curl -k https://engineering.redhat.com/Eng-CA.crt -o /etc/pki/ca-trust/source/anchors/Eng-CA.crt && \
     update-ca-trust extract
 
-# Create Google Cloud SDK and Azure CLI repos
+# Create Google Cloud SDK and Azure CLI repo
 COPY files/google-cloud-sdk.repo files/azure-cli.repo /etc/yum.repos.d/
 
 # Install headless Java
 RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     dnf -y update && \
     dnf -y install \
-        ansible \
+        ansible-core \
         azure-cli \
         bc \
         beaker-client \
@@ -50,8 +50,6 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
         origin-clients \
         psmisc \
         procps-ng \
-        python \
-        python3 \
         python3-devel \
         python3-pika \
         python3-pip \
@@ -92,12 +90,19 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     unlink /usr/share/man/man1/rmid.1.gz && \
     unlink /usr/share/man/man1/rmiregistry.1.gz && \
     unlink /usr/share/man/man1/unpack200.1.gz && \
-    pip install requests-credssp pywinrm pyvmomi boto boto3 openstacksdk stomp.py google-auth crcmod ansible[azure] && \
+    ansible-galaxy collection install -p /usr/share/ansible/collections community.general openstack.cloud amazon.aws community.aws azure.azcollection community.vmware google.cloud ansible.posix && \
+    pip install requests-credssp pyvmomi botocore boto3 openstacksdk stomp.py google-auth crcmod && \
+    pip install -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     aws --version && \
     rm -rf aws awscliv2.zip && \
+    ansible --version && \
+    ansible-galaxy collection list && \
+    az --version && \
+    gcloud --version && \
+    pip list && \
     mkdir -p /etc/beaker
 
 # Copy go-init source code
