@@ -288,6 +288,19 @@ unclassified:
           scm:
             git:
               remote: "https://gitlab.cee.redhat.com/3rd/3rdci-library.git"
+  jmsProviders:
+    configs:
+    - activeMq:
+        name: "Red Hat UMB"
+        broker: "failover:(ssl://messaging-devops-broker01.web.prod.ext.phx2.redhat.com:61616,ssl://messaging-devops-broker02.web.prod.ext.phx2.redhat.com:61616)"
+        authenticationMethod:
+          sslCertificate:
+            keystore: "/run/secrets/umb-secrets/redhat-ci-keystore.jks"
+            keypwd: "${umb-secrets/redhat-ci-stores}"
+            truststore: "/run/secrets/umb-secrets/redhat-ci-truststore.jks"
+            trustpwd: "${umb-secrets/redhat-ci-stores}"
+        topicProvider: "umb"
+        useQueues: true
   location:
     adminAddress: "Cloud CI <xiaofwan@redhat.com>"
     url: "https://jenkins-cloudci-stage-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"

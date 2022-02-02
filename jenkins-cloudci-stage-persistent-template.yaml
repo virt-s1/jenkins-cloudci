@@ -125,6 +125,9 @@ objects:
           volumeMounts:
           - mountPath: /var/jenkins_home
             name: ${JENKINS_SERVICE_NAME}-data
+          - name: umb-secrets
+            mountPath: /run/secrets/umb-secrets
+            readOnly: true
           env:
           - name: KUBERNETES_MASTER
             value: https://kubernetes.default:443
@@ -164,6 +167,10 @@ objects:
         - name: "${JENKINS_SERVICE_NAME}-data"
           persistentVolumeClaim:
             claimName: "${JENKINS_SERVICE_NAME}"
+        - name: umb-secrets
+          secret:
+            defaultMode: 420
+            secretName: umb-secrets
     triggers:
     - type: "ConfigChange"
     - type: "ImageChange"
