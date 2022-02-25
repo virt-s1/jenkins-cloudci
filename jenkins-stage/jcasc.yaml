@@ -295,8 +295,8 @@ unclassified:
         broker: "failover:(ssl://messaging-devops-broker01.web.prod.ext.phx2.redhat.com:61616,ssl://messaging-devops-broker02.web.prod.ext.phx2.redhat.com:61616)"
         authenticationMethod:
           sslCertificate:
-            keystore: "/run/secrets/umb-secrets/redhat-ci-keystore.jks"
-            keypwd: "${umb-secrets/redhat-ci-stores}"
+            keystore: "/run/secrets/umb-secrets/edge-qe-jenkins.keystore"
+            keypwd: "${umb-secrets/edge-qe-jenkins-keystore}"
             truststore: "/run/secrets/umb-secrets/redhat-ci-truststore.jks"
             trustpwd: "${umb-secrets/redhat-ci-stores}"
         topicProvider: "umb"
