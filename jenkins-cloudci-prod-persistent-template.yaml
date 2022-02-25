@@ -137,6 +137,10 @@ objects:
             value: "${JENKINS_SERVICE_NAME}"
           - name: JNLP_SERVICE_NAME
             value: "${JNLP_SERVICE_NAME}"
+          - name: PLUGINS_FORCE_UPGRADE
+            value: "true"
+          - name: TRY_UPGRADE_IF_NO_MARKER
+            value: "true"
           - name: CASC_JENKINS_CONFIG
             value: ${JENKINS_CASC_CONFIG}
           - name: JENKINS_JAVA_OVERRIDES
