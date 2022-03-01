@@ -213,6 +213,13 @@ jenkins:
             image:
               name: "RHEL-9.0.0-x86_64-nightly-latest"
           userDataId: "psi-openstack-rhel-9-0-0-user-data"
+      - labels: "vm-cs9-stage"
+        name: "vm-cs9-stage"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "edge-centos-stream-9"
+          userDataId: "psi-openstack-cs-user-data"
       zone: "regionOne"
 security:
   apiToken:
@@ -329,6 +336,12 @@ unclassified:
         content: |-
           #cloud-config
           packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
             - java-11-openjdk
           users:
             - default
