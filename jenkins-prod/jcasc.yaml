@@ -198,13 +198,6 @@ jenkins:
             image:
               name: "RHEL-8.6.0-x86_64-nightly-latest"
           userDataId: "psi-openstack-rhel-8-6-0-user-data"
-      - labels: "vm-fedora-33"
-        name: "vm-fedora-33"
-        slaveOptions:
-          bootSource:
-            image:
-              name: "Fedora-Cloud-Base-33"
-          userDataId: "psi-openstack-fedora-user-data"
       - labels: "vm-cs8"
         name: "vm-cs8"
         slaveOptions:
@@ -219,6 +212,13 @@ jenkins:
             image:
               name: "RHEL-9.0.0-x86_64-nightly-latest"
           userDataId: "psi-openstack-rhel-9-0-0-user-data"
+      - labels: "vm-cs9"
+        name: "vm-cs9"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "edge-centos-stream-9"
+          userDataId: "psi-openstack-cs-user-data"
       zone: "regionOne"
 security:
   apiToken:
@@ -419,13 +419,13 @@ unclassified:
           yum_repos:
             baseos:
               name: rhel8-baseos
-              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.4.0/compose/BaseOS/x86_64/os/
+              baseurl: https://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/updates/RHEL-8/latest-RHEL-8.4.0/compose/BaseOS/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
             appstream:
               name: rhel8-appstream
-              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.4.0/compose/AppStream/x86_64/os/
+              baseurl: https://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/updates/RHEL-8/latest-RHEL-8.4.0/compose/AppStream/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
@@ -467,13 +467,13 @@ unclassified:
           yum_repos:
             baseos:
               name: rhel8-baseos
-              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.5.0/compose/BaseOS/x86_64/os/
+              baseurl: https://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/updates/RHEL-8/latest-RHEL-8.5.0/compose/BaseOS/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
             appstream:
               name: rhel8-appstream
-              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/RHEL-8/latest-RHEL-8.5.0/compose/AppStream/x86_64/os/
+              baseurl: https://download-node-02.eng.bos.redhat.com/rhel-8/rel-eng/updates/RHEL-8/latest-RHEL-8.5.0/compose/AppStream/x86_64/os/
               enabled: true
               gpgcheck: false
               sslverify: false
