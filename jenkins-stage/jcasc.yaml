@@ -299,7 +299,7 @@ unclassified:
     configs:
     - activeMq:
         name: "Red Hat UMB"
-        broker: "failover:(ssl://messaging-devops-broker01.web.prod.ext.phx2.redhat.com:61616,ssl://messaging-devops-broker02.web.prod.ext.phx2.redhat.com:61616)"
+        broker: "failover:(ssl://umb-broker03.api.redhat.com:61616,ssl://umb-broker04.api.redhat.com:61616)"
         authenticationMethod:
           sslCertificate:
             keystore: "/run/secrets/umb-secrets/edge-qe-jenkins.keystore"
