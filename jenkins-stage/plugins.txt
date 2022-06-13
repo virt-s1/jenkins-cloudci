@@ -35,6 +35,7 @@ pam-auth:latest
 parameterized-trigger:latest
 pipeline-build-step:latest
 pipeline-github-lib:latest
+pipeline-groovy-lib:latest
 pipeline-input-step:latest
 pipeline-model-api:latest
 pipeline-model-definition:latest
@@ -50,7 +51,6 @@ subversion:latest
 timestamper:latest
 token-macro:latest
 workflow-aggregator:latest
-workflow-cps-global-lib:latest
 workflow-cps:latest
 workflow-remote-loader:latest
 workflow-support:latest
