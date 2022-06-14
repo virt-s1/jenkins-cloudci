@@ -86,29 +86,6 @@ jenkins:
       - containers:
         - args: "^${computer.jnlpmac} ^${computer.name}"
           command: ""
-          image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-33-prod:latest"
-          alwaysPullImage: true
-          livenessProbe:
-            failureThreshold: 0
-            initialDelaySeconds: 0
-            periodSeconds: 0
-            successThreshold: 0
-            timeoutSeconds: 0
-          name: "jnlp"
-          workingDir: "/home/jenkins"
-        id: "ef9360de-fbba-468f-9dfd-bc1e0c829e1b"
-        label: "container-fedora-33-prod"
-        name: "container-fedora-33-prod"
-        serviceAccount: "jenkins-cloudci-prod"
-        volumes:
-        - persistentVolumeClaim:
-            claimName: "jslave-prod-pv"
-            mountPath: "/home/jenkins/downloads"
-            readOnly: false
-        yamlMergeStrategy: "override"
-      - containers:
-        - args: "^${computer.jnlpmac} ^${computer.name}"
-          command: ""
           image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-35-prod:latest"
           alwaysPullImage: true
           livenessProbe:
@@ -122,6 +99,29 @@ jenkins:
         id: "6ab78c0c-1540-40db-aa43-c4645b2ea460"
         label: "container-fedora-35-prod"
         name: "container-fedora-35-prod"
+        serviceAccount: "jenkins-cloudci-prod"
+        volumes:
+        - persistentVolumeClaim:
+            claimName: "jslave-prod-pv"
+            mountPath: "/home/jenkins/downloads"
+            readOnly: false
+        yamlMergeStrategy: "override"
+      - containers:
+        - args: "^${computer.jnlpmac} ^${computer.name}"
+          command: ""
+          image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-36-prod:latest"
+          alwaysPullImage: true
+          livenessProbe:
+            failureThreshold: 0
+            initialDelaySeconds: 0
+            periodSeconds: 0
+            successThreshold: 0
+            timeoutSeconds: 0
+          name: "jnlp"
+          workingDir: "/home/jenkins"
+        id: "b61040e7-935e-4478-ac91-cd66aaccd954"
+        label: "container-fedora-36-prod"
+        name: "container-fedora-36-prod"
         serviceAccount: "jenkins-cloudci-prod"
         volumes:
         - persistentVolumeClaim:

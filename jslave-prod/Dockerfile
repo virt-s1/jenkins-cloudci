@@ -1,4 +1,4 @@
-FROM quay.io/fedora/fedora:35-x86_64
+FROM quay.io/fedora/fedora:36-x86_64
 LABEL maintainer='xiaofwan@redhat.com'
 
 ENV HOME=/home/jenkins \
@@ -20,7 +20,6 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     dnf -y update && \
     dnf -y install \
         ansible-core \
-        azure-cli \
         bc \
         beaker-client \
         bind-utils \
@@ -62,6 +61,7 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
         wget \
         which \
         zip && \
+    dnf -y install --repo=azure-cli azure-cli && \
     dnf clean all && \
     mkdir -p /home/jenkins && \
     mkdir -p /home/jenkins/downloads && \
