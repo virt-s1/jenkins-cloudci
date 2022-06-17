@@ -36,7 +36,7 @@ pipeline-build-step:2.18
 pipeline-github-lib:38.v445716ea_edda_
 pipeline-groovy-lib:593.va_a_fc25d520e9
 pipeline-input-step:448.v37cea_9a_10a_70
-pipeline-model-api:2.2086.v12b_420f036e5
+pipeline-model-api:2.2097.v33db_b_de764b_e
 pipeline-model-definition:2.2086.v12b_420f036e5
 pipeline-utility-steps:2.12.2
 prometheus:2.0.11
