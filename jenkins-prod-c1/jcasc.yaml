@@ -256,9 +256,9 @@ unclassified:
         useQueues: true
   location:
     adminAddress: "Cloud CI <xiaofwan@redhat.com>"
-    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
+    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp-c1.prod.psi.redhat.com/"
   resourceRoot:
-    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
+    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp-c1.prod.psi.redhat.com/"
   gitHubConfiguration:
     apiRateLimitChecker: ThrottleForNormalize
   gitHubPluginConfig:
