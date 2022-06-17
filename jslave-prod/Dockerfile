@@ -90,7 +90,7 @@ RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc && \
     unlink /usr/share/man/man1/rmiregistry.1.gz && \
     unlink /usr/share/man/man1/unpack200.1.gz && \
     ansible-galaxy collection install -p /usr/share/ansible/collections community.general openstack.cloud amazon.aws community.aws azure.azcollection community.vmware google.cloud ansible.posix && \
-    pip install requests-credssp pyvmomi botocore boto3 openstacksdk stomp.py google-auth crcmod && \
+    pip install requests-credssp pyvmomi botocore boto3 openstacksdk==0.61.0 stomp.py google-auth crcmod && \
     pip install -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements-azure.txt && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
