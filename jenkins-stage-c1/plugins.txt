@@ -55,4 +55,4 @@ workflow-cps:latest
 workflow-remote-loader:latest
 workflow-support:latest
 ws-cleanup:latest
-redhat-ci-plugin:latest:http://file-server-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/redhat-ci-plugin.hpi
+redhat-ci-plugin:latest:http://file-server-virt-qe-3rd.apps.ocp-c1.prod.psi.redhat.com/redhat-ci-plugin.hpi

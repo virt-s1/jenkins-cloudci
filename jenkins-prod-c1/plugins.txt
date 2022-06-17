@@ -54,4 +54,4 @@ workflow-cps:2725.v7b_c717eb_12ce
 workflow-remote-loader:1.5
 workflow-support:820.vd1a_6cc65ef33
 ws-cleanup:0.42
-redhat-ci-plugin:1.5.16:http://file-server-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/redhat-ci-plugin.hpi
+redhat-ci-plugin:1.5.16:http://file-server-virt-qe-3rd.apps.ocp-c1.prod.psi.redhat.com/redhat-ci-plugin.hpi
