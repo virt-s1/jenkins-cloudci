@@ -4,21 +4,27 @@ Jenkins for Cloud CI has prod and stage deployments on PSI OpenShift 4.6. Prod j
 
 ## How to deploy Jenkins and Jslave
 
-    $ oc login https://api.ocp4.prod.psi.redhat.com:6443 --token=<openshift token>
+    $ oc login https://api.ocp-c1.prod.psi.redhat.com:6443 --token=<openshift token>
     $ oc project virt-qe-3rd
     $ oc create -f jslave-cloudci-prod-buildconfig-template.yaml
-    $ oc create -f jenkins-cloudci-prod-persistent-template.yaml
+    $ oc create -f jenkins-cloudci-prod-c1-persistent-template.yaml
 
 ## How to update Jenkins and Jslave configuration
 
-    $ oc login https://api.ocp4.prod.psi.redhat.com:6443 --token=<openshift token>
+    $ oc login https://api.ocp-c1.prod.psi.redhat.com:6443 --token=<openshift token>
     $ oc project virt-qe-3rd
-    $ oc process -f jenkins-cloudci-prod-persistent-template.yaml | oc apply -f -
+    $ oc process -f jenkins-cloudci-prod-c1-persistent-template.yaml | oc apply -f -
     $ oc process -f jslave-cloudci-prod-buildconfig-template.yaml | oc apply -f -
 
 > *Build jslave image before jenkins image because the seed job in CasC will be running on it. All of Jenkins job will be run on jslave.*
 
 > *Please remove all jobs to avoid duplicate job trigger if you deploy your own Jenkins for debugging*
+
+## Add UMB certificate for redhat-ci-plugin
+
+Add certificate and related files as OpenShift secret
+
+    $ oc create secret generic umb-secrets --from-file /home/foo/Documents/redhat/redhat-ci-plugin-cert
 
 ## Configure Jenkins Credential
 
