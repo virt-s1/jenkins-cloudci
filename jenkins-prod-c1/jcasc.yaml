@@ -1,0 +1,501 @@
+jenkins:
+  systemMessage: "!!!DO NOT EDIT HERE!!!\r\nControlled by Configuration As Code and Job DSL"
+  agentProtocols:
+    - "JNLP4-connect"
+    - "Ping"
+  slaveAgentPort: 30032
+  crumbIssuer:
+    standard:
+      excludeClientIPFromCrumb: true
+  markupFormatter: "plainText"
+  mode: EXCLUSIVE
+  numExecutors: 0
+  quietPeriod: 0
+  remotingSecurity:
+    enabled: true
+  # Default LDAP configuration
+  securityRealm:
+    ldap:
+      cache:
+        size: 100
+        ttl: 10
+      configurations:
+        - server: ldaps://ldap.corp.redhat.com
+          rootDN: dc=redhat,dc=com
+          inhibitInferRootDN: false
+          userSearch: uid={0}
+          groupSearchBase: ou=groups
+          groupSearchFilter: (& (cn={0}) (objectclass=posixGroup))
+      userIdStrategy: CaseInsensitive
+      groupIdStrategy: CaseInsensitive
+
+  authorizationStrategy:
+    roleBased:
+      roles:
+        global:
+          - name: "admin"
+            description: "Jenkins administrators"
+            permissions:
+              - "Overall/Administer"
+            assignments:
+              - "xiaofwan"
+          - name: "anonymous"
+            description: "Anonymous users"
+            permissions:
+              - "Job/Cancel"
+              - "Overall/Read"
+              - "Job/Build"
+              - "Job/Read"
+              - "Agent/Build"
+            assignments:
+              - "anonymous"
+          - assignments:
+              - "s13rd"
+            name: "runner"
+            pattern: ".*"
+            permissions:
+              - "Agent/Provision"
+              - "Job/Move"
+              - "Job/Build"
+              - "Job/Create"
+              - "Job/Discover"
+              - "Job/Read"
+              - "Agent/Connect"
+              - "Agent/Delete"
+              - "Agent/Disconnect"
+              - "Agent/Create"
+              - "Job/Cancel"
+              - "Job/Delete"
+              - "Agent/Build"
+              - "Job/Configure"
+              - "Job/Workspace"
+              - "View/Create"
+              - "View/Delete"
+              - "View/Read"
+              - "View/Configure"
+  clouds:
+  - kubernetes:
+      containerCap: 100
+      containerCapStr: "100"
+      jenkinsTunnel: "jenkins-cloudci-prod-virt-qe-3rd.apps.ocp-c1.prod.psi.redhat.com:30032"
+      jenkinsUrl: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp-c1.prod.psi.redhat.com"
+      name: "openshift"
+      namespace: "virt-qe-3rd"
+      serverUrl: "https://api.ocp-c1.prod.psi.redhat.com:6443"
+      templates:
+      - containers:
+        - args: "^${computer.jnlpmac} ^${computer.name}"
+          command: ""
+          image: "image-registry.openshift-image-registry.svc:5000/virt-qe-3rd/jslave-container-fedora-36-prod:latest"
+          alwaysPullImage: true
+          livenessProbe:
+            failureThreshold: 0
+            initialDelaySeconds: 0
+            periodSeconds: 0
+            successThreshold: 0
+            timeoutSeconds: 0
+          name: "jnlp"
+          workingDir: "/home/jenkins"
+        id: "b61040e7-935e-4478-ac91-cd66aaccd954"
+        label: "container-fedora-36-prod"
+        name: "container-fedora-36-prod"
+        serviceAccount: "jenkins-cloudci-prod"
+        volumes:
+        - persistentVolumeClaim:
+            claimName: "jslave-prod-pv"
+            mountPath: "/home/jenkins/downloads"
+            readOnly: false
+        yamlMergeStrategy: "override"
+  - openstack:
+      credentialsId: "psi-openstack-credential-v3"
+      endPointUrl: "https://api.rhos-01.prod.psi.rdu2.redhat.com:13000/v3"
+      ignoreSsl: false
+      name: "rhos-01"
+      slaveOptions:
+        availabilityZone: "nova"
+        configDrive: true
+        fsRoot: "/home/admin"
+        hardwareId: "d581e40a-c57f-4d4a-9fa7-01b9a8e9d116"
+        keyPairName: "jslave_key"
+        launcherFactory:
+          ssh:
+            credentialsId: "psi-openstack-ssh-credential-admin"
+        networkId: "shared_net_9"
+        retentionTime: 0
+        securityGroups: "jslave_security_group"
+      templates:
+      - labels: "vm-rhel-8-6-0"
+        name: "vm-rhel-8-6-0"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "RHEL-8.6.0-x86_64-nightly-latest"
+          userDataId: "psi-openstack-rhel-8-6-0-user-data"
+      - labels: "vm-rhel-8-7-0"
+        name: "vm-rhel-8-7-0"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "RHEL-8.7.0-x86_64-nightly-latest"
+          userDataId: "psi-openstack-rhel-8-7-0-user-data"
+      - labels: "vm-cs8"
+        name: "vm-cs8"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "edge-centos-stream-8"
+          userDataId: "psi-openstack-cs-user-data"
+      - labels: "vm-rhel-9-0-0"
+        name: "vm-rhel-9-0-0"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "RHEL-9.0.0-x86_64-nightly-latest"
+          userDataId: "psi-openstack-rhel-9-0-0-user-data"
+      - labels: "vm-rhel-9-1-0"
+        name: "vm-rhel-9-1-0"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "RHEL-9.1.0-x86_64-nightly-latest"
+          userDataId: "psi-openstack-rhel-9-1-0-user-data"
+      - labels: "vm-cs9"
+        name: "vm-cs9"
+        slaveOptions:
+          bootSource:
+            image:
+              name: "edge-centos-stream-9"
+          userDataId: "psi-openstack-cs-user-data"
+      zone: "regionOne"
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: true
+  queueItemAuthenticator:
+    authenticators:
+    - global:
+        strategy:
+          specificUsersAuthorizationStrategy:
+            userid: s13rd
+  sSHD:
+    port: -1
+  scriptApproval:
+    approvedSignatures:
+    - "method groovy.json.JsonSlurperClassic parseText java.lang.String"
+    - "method groovy.lang.GroovyObject invokeMethod java.lang.String java.lang.Object"
+    - "method hudson.model.Item getName"
+    - "method hudson.model.ItemGroup getAllItems java.lang.Class"
+    - "method hudson.model.Job getBuilds"
+    - "method hudson.model.Job isBuilding"
+    - "method hudson.model.Run getEnvironment"
+    - "method hudson.model.Run getNumber"
+    - "method hudson.model.Run isBuilding"
+    - "method java.io.ByteArrayOutputStream toByteArray"
+    - "method java.io.OutputStream write byte[]"
+    - "method java.lang.AutoCloseable close"
+    - "method java.lang.Class getSuperclass"
+    - "method java.lang.Class isAssignableFrom java.lang.Class"
+    - "method java.lang.Class isInstance java.lang.Object"
+    - "method java.lang.String getBytes"
+    - "method java.util.Deque pollFirst"
+    - "method java.util.Queue offer java.lang.Object"
+    - "method org.jenkinsci.plugins.workflow.job.WorkflowRun doStop"
+    - "method org.jenkinsci.plugins.workflow.support.actions.EnvironmentAction getEnvironment"
+    - "new groovy.json.JsonSlurperClassic"
+    - "new groovy.lang.GroovyRuntimeException"
+    - "new java.io.ByteArrayOutputStream"
+    - "new java.lang.Exception java.lang.String"
+    - "new java.lang.Exception java.lang.String java.lang.Throwable"
+    - "new java.util.concurrent.LinkedBlockingDeque int"
+    - "new java.util.zip.GZIPOutputStream java.io.OutputStream"
+    - "staticMethod java.lang.Class forName java.lang.String"
+    - "staticMethod java.lang.Double parseDouble java.lang.String"
+    - "staticMethod java.lang.Double toString double"
+    - "staticMethod java.time.Instant now"
+    - "staticMethod java.util.UUID nameUUIDFromBytes byte[]"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods contains java.lang.Object[]\
+      \ java.lang.Object"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[]\
+      \ groovy.lang.IntRange"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.lang.Object[]\
+      \ java.util.Collection"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.util.List\
+      \ groovy.lang.Range"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods getAt java.util.List\
+      \ java.util.Collection"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods max java.util.Collection"
+    - "staticMethod org.codehaus.groovy.runtime.DefaultGroovyMethods min java.util.Collection"
+    - "staticMethod org.codehaus.groovy.runtime.EncodingGroovyMethods encodeBase64\
+      \ byte[]"
+    - "staticMethod org.jenkinsci.plugins.pipeline.modeldefinition.Utils markStageSkippedForConditional\
+      \ java.lang.String"
+unclassified:
+  globalLibraries:
+    libraries:
+    - name: "3rdci-library"
+      retriever:
+        modernSCM:
+          scm:
+            git:
+              remote: "https://gitlab.cee.redhat.com/3rd/3rdci-library.git"
+  jmsProviders:
+    configs:
+    - activeMq:
+        name: "Red Hat UMB"
+        broker: "failover:(ssl://umb-broker03.api.redhat.com:61616,ssl://umb-broker04.api.redhat.com:61616)"
+        authenticationMethod:
+          sslCertificate:
+            keystore: "/run/secrets/umb-secrets/edge-qe-jenkins.keystore"
+            keypwd: "${umb-secrets/edge-qe-jenkins-keystore}"
+            truststore: "/run/secrets/umb-secrets/redhat-ci-truststore.jks"
+            trustpwd: "${umb-secrets/redhat-ci-stores}"
+        topicProvider: "umb"
+        useQueues: true
+  location:
+    adminAddress: "Cloud CI <xiaofwan@redhat.com>"
+    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
+  resourceRoot:
+    url: "https://jenkins-cloudci-prod-virt-qe-3rd.apps.ocp4.prod.psi.redhat.com/"
+  gitHubConfiguration:
+    apiRateLimitChecker: ThrottleForNormalize
+  gitHubPluginConfig:
+    configs:
+    - credentialsId: "github-api-credential"
+      manageHooks: false
+      name: "Github"
+  mailer:
+    charset: "UTF-8"
+    defaultSuffix: "@redhat.com"
+    smtpHost: "smtp.corp.redhat.com"
+    useSsl: false
+  timestamper:
+    allPipelines: true
+    elapsedTimeFormat: "'<b>'HH:mm:ss.S'</b> '"
+    systemTimeFormat: "'<b>'HH:mm:ss'</b> '"
+  globalConfigFiles:
+    configs:
+    - openstackUserData:
+        content: |-
+          #cloud-config
+          yum_repos:
+            baseos:
+              name: rhel9-baseos
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-9/nightly/updates/RHEL-9/latest-RHEL-9.0.0/compose/BaseOS/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+            appstream:
+              name: rhel9-appstream
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-9/nightly/updates/RHEL-9/latest-RHEL-9.0.0/compose/AppStream/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+          packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
+            - java-11-openjdk
+            - expect
+            - qemu-img
+            - qemu-kvm
+            - libvirt-client
+            - libvirt-daemon-kvm
+            - virt-install
+            - python3-lxml
+          users:
+            - default
+            - name: admin
+              gecos: Administrator
+              groups: users,wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjT6VkfcyzUflY3n95oKIuqAOuCN5bJDBzfu0t62DabzcNjpCuK0fiKyx0B+UiLJJhprXnFmxmSly2vHApdwwIjLd09WRepcG8p6WdUTv3LfKljNf/iZrfaNeEC0+zjxyCxXc5a3ePYYi/cIcYy1sZIwe3/Q+q4LHU/rqN7eTG6RkxJ71wN3jP3lrkTQm/Uc+qIHGR3kGQuY+4ARZg08zEtpM2EWWxDvZJWGlhvYxt86mdKy/ngNxbK4fYaq1DRAhJyFxekEaoGSDE+gADNAxknzoslxpqul530Zk/E+umEIxWlYWWFSXppxRk/g1Ue03FKzJ7/bU1y39iCUsMdGJxMpRktWQAWnr1rfQAltgbyePmbk/sXhjHgkDlvkSRQbGJKZ534jXJJaSPmwnUHq8iKr1dBMLo55qK8aBglj/MZUAq7/Y5354cPze2lLtVrOS4IO3UErNLb+H4AZ+suD5OMjUZ3sP6F2FeA/j7wGxv6yUvrVpT4Quc4SVhJOuDRdU= jslave-psi-openstack
+              ssh_pwauth: True
+              chpasswd:
+                list: |
+                  root:foobar
+                  admin:foobar
+                expire: False
+        id: "psi-openstack-rhel-9-0-0-user-data"
+        name: "psi-openstack-rhel-9-0-0-user-data"
+        providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
+    - openstackUserData:
+        content: |-
+          #cloud-config
+          yum_repos:
+            baseos:
+              name: rhel9-baseos
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-9/nightly/RHEL-9/latest-RHEL-9.1.0/compose/BaseOS/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+            appstream:
+              name: rhel9-appstream
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-9/nightly/RHEL-9/latest-RHEL-9.1.0/compose/AppStream/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+          packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
+            - java-11-openjdk
+            - expect
+            - qemu-img
+            - qemu-kvm
+            - libvirt-client
+            - libvirt-daemon-kvm
+            - virt-install
+            - python3-lxml
+          users:
+            - default
+            - name: admin
+              gecos: Administrator
+              groups: users,wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjT6VkfcyzUflY3n95oKIuqAOuCN5bJDBzfu0t62DabzcNjpCuK0fiKyx0B+UiLJJhprXnFmxmSly2vHApdwwIjLd09WRepcG8p6WdUTv3LfKljNf/iZrfaNeEC0+zjxyCxXc5a3ePYYi/cIcYy1sZIwe3/Q+q4LHU/rqN7eTG6RkxJ71wN3jP3lrkTQm/Uc+qIHGR3kGQuY+4ARZg08zEtpM2EWWxDvZJWGlhvYxt86mdKy/ngNxbK4fYaq1DRAhJyFxekEaoGSDE+gADNAxknzoslxpqul530Zk/E+umEIxWlYWWFSXppxRk/g1Ue03FKzJ7/bU1y39iCUsMdGJxMpRktWQAWnr1rfQAltgbyePmbk/sXhjHgkDlvkSRQbGJKZ534jXJJaSPmwnUHq8iKr1dBMLo55qK8aBglj/MZUAq7/Y5354cPze2lLtVrOS4IO3UErNLb+H4AZ+suD5OMjUZ3sP6F2FeA/j7wGxv6yUvrVpT4Quc4SVhJOuDRdU= jslave-psi-openstack
+              ssh_pwauth: True
+              chpasswd:
+                list: |
+                  root:foobar
+                  admin:foobar
+                expire: False
+        id: "psi-openstack-rhel-9-1-0-user-data"
+        name: "psi-openstack-rhel-9-1-0-user-data"
+        providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
+    - openstackUserData:
+        content: |-
+          #cloud-config
+          yum_repos:
+            baseos:
+              name: rhel8-baseos
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/updates/RHEL-8/latest-RHEL-8.6.0/compose/BaseOS/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+            appstream:
+              name: rhel8-appstream
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/updates/RHEL-8/latest-RHEL-8.6.0/compose/AppStream/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+          packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
+            - java-11-openjdk
+            - expect
+            - qemu-img
+            - qemu-kvm
+            - libvirt-client
+            - libvirt-daemon-kvm
+            - virt-install
+            - python3-lxml
+          users:
+            - default
+            - name: admin
+              gecos: Administrator
+              groups: users,wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjT6VkfcyzUflY3n95oKIuqAOuCN5bJDBzfu0t62DabzcNjpCuK0fiKyx0B+UiLJJhprXnFmxmSly2vHApdwwIjLd09WRepcG8p6WdUTv3LfKljNf/iZrfaNeEC0+zjxyCxXc5a3ePYYi/cIcYy1sZIwe3/Q+q4LHU/rqN7eTG6RkxJ71wN3jP3lrkTQm/Uc+qIHGR3kGQuY+4ARZg08zEtpM2EWWxDvZJWGlhvYxt86mdKy/ngNxbK4fYaq1DRAhJyFxekEaoGSDE+gADNAxknzoslxpqul530Zk/E+umEIxWlYWWFSXppxRk/g1Ue03FKzJ7/bU1y39iCUsMdGJxMpRktWQAWnr1rfQAltgbyePmbk/sXhjHgkDlvkSRQbGJKZ534jXJJaSPmwnUHq8iKr1dBMLo55qK8aBglj/MZUAq7/Y5354cPze2lLtVrOS4IO3UErNLb+H4AZ+suD5OMjUZ3sP6F2FeA/j7wGxv6yUvrVpT4Quc4SVhJOuDRdU= jslave-psi-openstack
+              ssh_pwauth: True
+              chpasswd:
+                list: |
+                  root:foobar
+                  admin:foobar
+                expire: False
+        id: "psi-openstack-rhel-8-6-0-user-data"
+        name: "psi-openstack-rhel-8-6-0-user-data"
+        providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
+    - openstackUserData:
+        content: |-
+          #cloud-config
+          yum_repos:
+            baseos:
+              name: rhel8-baseos
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.7.0/compose/BaseOS/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+            appstream:
+              name: rhel8-appstream
+              baseurl: http://download-node-02.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.7.0/compose/AppStream/x86_64/os/
+              enabled: true
+              gpgcheck: false
+              sslverify: false
+          packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
+            - java-11-openjdk
+            - expect
+            - qemu-img
+            - qemu-kvm
+            - libvirt-client
+            - libvirt-daemon-kvm
+            - virt-install
+            - python3-lxml
+          users:
+            - default
+            - name: admin
+              gecos: Administrator
+              groups: users,wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjT6VkfcyzUflY3n95oKIuqAOuCN5bJDBzfu0t62DabzcNjpCuK0fiKyx0B+UiLJJhprXnFmxmSly2vHApdwwIjLd09WRepcG8p6WdUTv3LfKljNf/iZrfaNeEC0+zjxyCxXc5a3ePYYi/cIcYy1sZIwe3/Q+q4LHU/rqN7eTG6RkxJ71wN3jP3lrkTQm/Uc+qIHGR3kGQuY+4ARZg08zEtpM2EWWxDvZJWGlhvYxt86mdKy/ngNxbK4fYaq1DRAhJyFxekEaoGSDE+gADNAxknzoslxpqul530Zk/E+umEIxWlYWWFSXppxRk/g1Ue03FKzJ7/bU1y39iCUsMdGJxMpRktWQAWnr1rfQAltgbyePmbk/sXhjHgkDlvkSRQbGJKZ534jXJJaSPmwnUHq8iKr1dBMLo55qK8aBglj/MZUAq7/Y5354cPze2lLtVrOS4IO3UErNLb+H4AZ+suD5OMjUZ3sP6F2FeA/j7wGxv6yUvrVpT4Quc4SVhJOuDRdU= jslave-psi-openstack
+              ssh_pwauth: True
+              chpasswd:
+                list: |
+                  root:foobar
+                  admin:foobar
+                expire: False
+        id: "psi-openstack-rhel-8-7-0-user-data"
+        name: "psi-openstack-rhel-8-7-0-user-data"
+        providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
+    - openstackUserData:
+        content: |-
+          #cloud-config
+          packages:
+            - git
+            - curl
+            - wget
+            - jq
+            - python3
+            - python3-dnf
+            - java-11-openjdk
+          users:
+            - default
+            - name: admin
+              gecos: Administrator
+              groups: users,wheel
+              sudo: ALL=(ALL) NOPASSWD:ALL
+              ssh_authorized_keys:
+                - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjT6VkfcyzUflY3n95oKIuqAOuCN5bJDBzfu0t62DabzcNjpCuK0fiKyx0B+UiLJJhprXnFmxmSly2vHApdwwIjLd09WRepcG8p6WdUTv3LfKljNf/iZrfaNeEC0+zjxyCxXc5a3ePYYi/cIcYy1sZIwe3/Q+q4LHU/rqN7eTG6RkxJ71wN3jP3lrkTQm/Uc+qIHGR3kGQuY+4ARZg08zEtpM2EWWxDvZJWGlhvYxt86mdKy/ngNxbK4fYaq1DRAhJyFxekEaoGSDE+gADNAxknzoslxpqul530Zk/E+umEIxWlYWWFSXppxRk/g1Ue03FKzJ7/bU1y39iCUsMdGJxMpRktWQAWnr1rfQAltgbyePmbk/sXhjHgkDlvkSRQbGJKZ534jXJJaSPmwnUHq8iKr1dBMLo55qK8aBglj/MZUAq7/Y5354cPze2lLtVrOS4IO3UErNLb+H4AZ+suD5OMjUZ3sP6F2FeA/j7wGxv6yUvrVpT4Quc4SVhJOuDRdU= jslave-psi-openstack
+              ssh_pwauth: True
+              chpasswd:
+                list: |
+                  root:foobar
+                  admin:foobar
+                expire: False
+        id: "psi-openstack-cs-user-data"
+        name: "psi-openstack-cs-user-data"
+        providerId: "jenkins.plugins.openstack.compute.UserDataConfig"
+jobs:
+  - url: https://raw.githubusercontent.com/virt-s1/jenkins-jobs-cloudci/master/seed-prod-c1.groovy
